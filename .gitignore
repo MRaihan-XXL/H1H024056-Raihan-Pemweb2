@@ -1,0 +1,28 @@
+# Laravel
+latihan-laravel/vendor/
+latihan-laravel/node_modules/
+latihan-laravel/public/build/
+latihan-laravel/public/hot
+latihan-laravel/public/storage/
+latihan-laravel/storage/*.key
+latihan-laravel/.env
+latihan-laravel/.env.backup
+latihan-laravel/.env.production
+latihan-laravel/.phpunit.result.cache
+latihan-laravel/Homestead.json
+latihan-laravel/Homestead.yaml
+latihan-laravel/auth.json
+latihan-laravel/npm-debug.log
+latihan-laravel/yarn-error.log
+latihan-laravel/.fleet/
+latihan-laravel/.idea/
+latihan-laravel/.vscode/
+
+# Go binary
+latihan-fiber/latihan-fiber.exe
+latihan-fiber/*.exe
+
+# General
+*.log
+.DS_Store
+pemweb2/screenshots/

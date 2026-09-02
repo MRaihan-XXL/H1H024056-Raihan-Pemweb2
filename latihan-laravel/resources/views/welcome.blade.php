@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Pemrograman Web II - Modul 1</title>
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <style>
+            body {
+                font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+                background: #FDFDFC;
+                color: #1b1b18;
+                margin: 0;
+                padding: 2rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .card {
+                background: #fff;
+                border: 1px solid rgba(26,26,0,0.16);
+                border-radius: 0.5rem;
+                padding: 2rem 3rem;
+                max-width: 500px;
+                width: 100%;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            }
+            h1 {
+                font-size: 1.25rem;
+                font-weight: 500;
+                margin-bottom: 1.5rem;
+            }
+            .info-group {
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background: #FDFDFC;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+            }
+            .info-label {
+                color: #706f6c;
+                font-size: 0.8rem;
+                margin-bottom: 0.25rem;
+            }
+            .info-value {
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+            .version {
+                margin-top: 1.5rem;
+                color: #706f6c;
+                font-size: 0.8rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>Pemrograman Web II - Modul 1</h1>
+            <div class="info-group">
+                <div class="info-label">Nama</div>
+                <div class="info-value">Muhammad Raihan Izzuddin Ismadi</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">NIM</div>
+                <div class="info-value">H1H024056</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">Program Studi</div>
+                <div class="info-value">Teknik Komputer</div>
+            </div>
+            <div class="version">Laravel v{{ app()->version() }}</div>
+        </div>
+    </body>
+</html>
