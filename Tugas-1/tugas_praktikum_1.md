@@ -1,33 +1,33 @@
-## E. Tugas Praktikum
-
-
-# 1. Tambahkan satu endpoint GET /api/mahasiswa pada proyek Fiber yang mengembalikan JSON berisi NIM, nama, dan program studi Anda.
-
+# E. Tugas Praktikum
+ 
+ 
+### 1. Tambahkan satu endpoint GET /api/mahasiswa pada proyek Fiber yang mengembalikan JSON berisi NIM, nama, dan program studi Anda.
+ 
 ![alt text](01-fiber-mahasiswa.png)
 
 
 
-
-# 2. Ubah halaman depan Laravel agar menampilkan teks berisi nama dan NIM Anda.
-
+ 
+### 2. Ubah halaman depan Laravel agar menampilkan teks berisi nama dan NIM Anda.
+ 
 ![alt text](02-laravel-homepage.png)
 
 
 
-
-# 3. Buat repositori pada GitHub dengan nama sesuai konvensi, lalu unggah kedua proyek.
-
+ 
+### 3. Buat repositori pada GitHub dengan nama sesuai konvensi, lalu unggah kedua proyek.
+ 
 ![alt text](03-repositori-github.png)
 
 
-
+ 
 https://github.com/MRaihan-XXL/H1H024056-Raihan-Pemweb2/tree/main 
 
-
-# 4. Susun tabel perbandingan singkat antara Laravel dan Fiber berdasarkan pengalaman instalasi Anda, minimal empat aspek.
-
+ 
+### 4. Susun tabel perbandingan singkat antara Laravel dan Fiber berdasarkan pengalaman instalasi Anda, minimal empat aspek.
+ 
 Berikut perbandingan Laravel 13 (PHP) dan Fiber v3 (Go) berdasarkan pengalaman instalasi praktikum:
-
+ 
 <table>
   <thead>
     <tr>
@@ -89,21 +89,22 @@ Berikut perbandingan Laravel 13 (PHP) dan Fiber v3 (Go) berdasarkan pengalaman i
     </tr>
   </tbody>
 </table>
-
-# Kesimpulan
+ 
+### Kesimpulan
+ 
 - Laravel	:  lebih cocok untuk pengembangan cepat dengan banyak fitur bawaan (ORM, autentikasi, migrasi)
 - Fiber		: lebih cocok untuk layanan yang menuntut latensi rendah dan deployment sederhana (single binary)
 
 
 
+ 
+# F. Pertanyaan Pembahasan
+ 
 
-## F. Pertanyaan Pembahasan
 
-
-
-
-# 1. Mengapa folder vendor pada Laravel dan berkas binary Go tidak diikutsertakan dalam repositori Git?
-
+ 
+### 1. Mengapa folder vendor pada Laravel dan berkas binary Go tidak diikutsertakan dalam repositori Git?
+ 
 
 Folder vendor pada Laravel dan berkas binary pada Go tidak diikutsertakan dalam repositori Git karena bersifat generated (bisa dibuat ulang), berukuran besar, dan akan membuat repo tidak efisien. Yang perlu di-commit hanyalah kode sumber dan file konfigurasi (seperti composer.json dan go.mod) yang mendefinisikan dependensi.
 
@@ -111,9 +112,9 @@ Folder vendor pada Laravel dan berkas binary pada Go tidak diikutsertakan dalam 
 
 
 
-
-# 2. Apa fungsi berkas composer.json dan go.mod, serta apa persamaan keduanya?
-
+ 
+### 2. Apa fungsi berkas composer.json dan go.mod, serta apa persamaan keduanya?
+ 
 
 a. Fungsi composer.json (Laravel):
 - Mendefinisikan komponen PHP yang dibutuhkan proyek (seperti laravel/framework v13.30.1).
@@ -140,9 +141,9 @@ c. Persamaan keduanya:
 
 
 
-
-# 3. Jelaskan perbedaan port 8000 pada Laravel dan port 3000 pada Fiber dalam konteks praktikum ini.
-
+ 
+### 3. Jelaskan perbedaan port 8000 pada Laravel dan port 3000 pada Fiber dalam konteks praktikum ini.
+ 
 
 Dalam konteks praktikum ini, Laravel menggunakan port 8000 dan Fiber menggunakan port 3000. Berikut penjelasan perbedaannya:
 
