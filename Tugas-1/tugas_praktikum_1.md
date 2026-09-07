@@ -92,8 +92,8 @@ Berikut perbandingan Laravel 13 (PHP) dan Fiber v3 (Go) berdasarkan pengalaman i
  
 ### Kesimpulan
  
-- Laravel	:  lebih cocok untuk pengembangan cepat dengan banyak fitur bawaan (ORM, autentikasi, migrasi)
-- Fiber		: lebih cocok untuk layanan yang menuntut latensi rendah dan deployment sederhana (single binary)
+   > - Laravel	:  lebih cocok untuk pengembangan cepat dengan banyak fitur bawaan (ORM, autentikasi, migrasi)
+   > - Fiber		: lebih cocok untuk layanan yang menuntut latensi rendah dan deployment sederhana (single binary)
 
 
 
@@ -106,38 +106,35 @@ Berikut perbandingan Laravel 13 (PHP) dan Fiber v3 (Go) berdasarkan pengalaman i
 ### 1. Mengapa folder vendor pada Laravel dan berkas binary Go tidak diikutsertakan dalam repositori Git?
  
 
-Folder vendor pada Laravel dan berkas binary pada Go tidak diikutsertakan dalam repositori Git karena bersifat generated (bisa dibuat ulang), berukuran besar, dan akan membuat repo tidak efisien. Yang perlu di-commit hanyalah kode sumber dan file konfigurasi (seperti composer.json dan go.mod) yang mendefinisikan dependensi.
-
-
-
+   > Folder vendor pada Laravel dan berkas binary pada Go tidak diikutsertakan dalam repositori Git karena bersifat generated (bisa dibuat ulang), berukuran besar, dan akan membuat repo tidak efisien. Yang perlu di-commit hanyalah kode sumber dan file konfigurasi (seperti composer.json dan go.mod) yang mendefinisikan dependensi.
 
 
  
 ### 2. Apa fungsi berkas composer.json dan go.mod, serta apa persamaan keduanya?
  
 
-a. Fungsi composer.json (Laravel):
-- Mendefinisikan komponen PHP yang dibutuhkan proyek (seperti laravel/framework v13.30.1).
-- Menentukan versi PHP yang dibutuhkan.
-- Mengatur autoload (penanganan namespace dan file loading otomatis).
-- Menentukan skrip tambahan (post-install, post-update, dll).
-- Menyimpan konfigurasi extra untuk package tertentu.
+   > a. Fungsi composer.json (Laravel):
+   > - Mendefinisikan komponen PHP yang dibutuhkan proyek (seperti laravel/framework v13.30.1).
+   > - Menentukan versi PHP yang dibutuhkan.
+   > - Mengatur autoload (penanganan namespace dan file loading otomatis).
+   > - Menentukan skrip tambahan (post-install, post-update, dll).
+   > - Menyimpan konfigurasi extra untuk package tertentu.
 
 
-b. Fungsi go.mod (Fiber):
-- Mendefinisikan nama modul Go (misal: modul latihan-fiber).
-- Menentukan versi Go yang dibutuhkan (misal: go 1.27.0).
-- Menyimpan daftar komponen dan versinya (misal: github.com/gofiber/fiber/v3 v3.5.0).
-- Mengatur indirect komponen dari suatu komponen.
-- Menentukan checksum untuk keamanan (go.sum).
+   > b. Fungsi go.mod (Fiber):
+   > - Mendefinisikan nama modul Go (misal: modul latihan-fiber).
+   > - Menentukan versi Go yang dibutuhkan (misal: go 1.27.0).
+   > - Menyimpan daftar komponen dan versinya (misal: github.com/gofiber/fiber/v3 v3.5.0).
+   > - Mengatur indirect komponen dari suatu komponen.
+   > - Menentukan checksum untuk keamanan (go.sum).
 
 
-c. Persamaan keduanya:
-- File konfigurasi tertulis yang mendefinisikan paket-paket yang dibutuhkan.
-- Digunakan untuk menginstal library pihak ketiga secara otomatis.
-- Menjaga konsistensi versi dependensi di antara pengembang yang berbeda.
-- Di-commit ke repositori Git (berbeda dengan vendor/ atau binary).
-- Membuat proses development terstruktur dan repeatable (bisa dipulihkan di komputer lain).
+   > c. Persamaan keduanya:
+   > - File konfigurasi tertulis yang mendefinisikan paket-paket yang dibutuhkan.
+   > - Digunakan untuk menginstal library pihak ketiga secara otomatis.
+   > - Menjaga konsistensi versi dependensi di antara pengembang yang berbeda.
+   > - Di-commit ke repositori Git (berbeda dengan vendor/ atau binary).
+   > - Membuat proses development terstruktur dan repeatable (bisa dipulihkan di komputer lain).
 
 
 
@@ -145,24 +142,24 @@ c. Persamaan keduanya:
 ### 3. Jelaskan perbedaan port 8000 pada Laravel dan port 3000 pada Fiber dalam konteks praktikum ini.
  
 
-Dalam konteks praktikum ini, Laravel menggunakan port 8000 dan Fiber menggunakan port 3000. Berikut penjelasan perbedaannya:
+   > Dalam konteks praktikum ini, Laravel menggunakan port 8000 dan Fiber menggunakan port 3000. Berikut penjelasan perbedaannya:
 
-a. Laravel (Port 8000):
-- Port 8000 adalah port default yang digunakan oleh perintah php artisan serve.
-- Laravel menggunakan port ini sejak versi awal dan sudah menjadi konvensi.
-- Pengguna mengakses aplikasi melalui http://127.0.0.1:8000 atau http://localhost:8000.
-- Port ini bisa diubah dengan perintah php artisan serve --port=3000 jika diperlukan.
+   > a. Laravel (Port 8000):
+   > - Port 8000 adalah port default yang digunakan oleh perintah php artisan serve.
+   > - Laravel menggunakan port ini sejak versi awal dan sudah menjadi konvensi.
+   > - Pengguna mengakses aplikasi melalui http://127.0.0.1:8000 atau http://localhost:8000.
+   > - Port ini bisa diubah dengan perintah php artisan serve --port=3000 jika diperlukan.
 
-b. Fiber (Port 3000):
-- Port 3000 adalah port default yang digunakan oleh Fiber saat menjalankan app.Listen(":3000").
-- Fiber memilih port 3000 untuk membedakan dari Laravel yang sudah menggunakan port 8000.
-- Pengguna mengakses aplikasi melalui http://localhost:3000.
-- Port ini bisa diubah dengan mengganti angka pada app.Listen(":XXXX").
+   > b. Fiber (Port 3000):
+   > - Port 3000 adalah port default yang digunakan oleh Fiber saat menjalankan app.Listen(":3000").
+   > - Fiber memilih port 3000 untuk membedakan dari Laravel yang sudah menggunakan port 8000.
+   > - Pengguna mengakses aplikasi melalui http://localhost:3000.
+   > - Port ini bisa diubah dengan mengganti angka pada app.Listen(":XXXX").
 
-c. Alasan Perbedaan:
-- Port berbeda diperlukan agar kedua server bisa berjalan secara bersamaan tanpa konflik.
-- Dalam praktikum ini, Laravel dan Fiber dijalankan di mesin yang sama (localhost), sehingga harus menggunakan port berbeda.
-- Port berbeda juga menunjukkan bahwa konfigurasi port adalah bagian dari konfigurasi aplikasi, bukan batasan teknologi.
+   > c. Alasan Perbedaan:
+   > - Port berbeda diperlukan agar kedua server bisa berjalan secara bersamaan tanpa konflik.
+   > - Dalam praktikum ini, Laravel dan Fiber dijalankan di mesin yang sama (localhost), sehingga harus menggunakan port berbeda.
+   > - Port berbeda juga menunjukkan bahwa konfigurasi port adalah bagian dari konfigurasi aplikasi, bukan batasan teknologi.
 
-d. Kesimpulan Praktikum:
-Perbedaan port 8000 (Laravel) dan 3000 (Fiber) hanyalah masalah konfigurasi default, bukan perbedaan kemampuan teknologi. Keduanya adalah framework yang bisa menjalankan RESTful API di port mana pun sesuai kebutuhan. Hal ini membuktikan bahwa konsep RESTful API bersifat universal dan tidak terikat pada satu bahasa pemrograman atau framework tertentu.
+   > d. Kesimpulan Praktikum:
+   > Perbedaan port 8000 (Laravel) dan 3000 (Fiber) hanyalah masalah konfigurasi default, bukan perbedaan kemampuan teknologi. Keduanya adalah framework yang bisa menjalankan RESTful API di port mana pun sesuai kebutuhan. Hal ini membuktikan bahwa konsep RESTful API bersifat universal dan tidak terikat pada satu bahasa pemrograman atau framework tertentu.
