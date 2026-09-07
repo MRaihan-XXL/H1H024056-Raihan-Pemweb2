@@ -30,53 +30,71 @@ https://github.com/MRaihan-XXL/H1H024056-Raihan-Pemweb2/tree/main
 4. Susun tabel perbandingan singkat antara Laravel dan Fiber berdasarkan pengalaman instalasi Anda, minimal empat aspek.
 
 
+## 4. Tabel Perbandingan Laravel dan Fiber
 
-Aspek
-Laravel 13 (PHP)
-Fiber v3 (Go)
-Bahasa Pemrograman
-PHP (interpreted)
-Go (compiled ke binary)
-Ukuran Proyek Awal
-~70 MB (vendor/ + dependencies)
-~8 MB (single binary + go.mod)
-Kecepatan Install
-~3-5 menit (composer install)
-~30 detik (go get)
-Port Default
-8000 (php artisan serve)
-3000 (go run main.go)
-Cara Jalankan
-php artisan serve
-(butuh PHP runtime)
-go run main.go
-atau jalankan binary langsung
-Konfigurasi Awal
-Banyak file konfigurasi
-(config/, .env, bootstrap/)
-Minimal
-(hanya main.go + go.mod)
-Dependency Manager
-Composer (composer.json)
-Go Modules (go.mod)
-Output Deployment
-Membutuhkan web server
-(PHP built-in/Apache/Nginx)
-Binary tunggal,
-bisa langsung dijalankan
-Cocok Untuk
-Aplikasi bisnis,
-CRUD kompleks, admin panel
-Microservices,
-API ringan, performa tinggi
-Fitur Bawaan
-ORM, Migration, Autentikasi,
-Queue, Scheduler
-Routing, Middleware,
-HTTP Handler
+Berikut perbandingan Laravel 13 (PHP) dan Fiber v3 (Go) berdasarkan pengalaman instalasi praktikum:
 
-
-
+<table>
+  <thead>
+    <tr>
+      <th>Aspek</th>
+      <th>Laravel 13 (PHP)</th>
+      <th>Fiber v3 (Go)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Bahasa Pemrograman</strong></td>
+      <td>PHP (interpreted)</td>
+      <td>Go (compiled ke binary)</td>
+    </tr>
+    <tr>
+      <td><strong>Ukuran Proyek Awal</strong></td>
+      <td>~70 MB (vendor/ + dependencies)</td>
+      <td>~8 MB (single binary + go.mod)</td>
+    </tr>
+    <tr>
+      <td><strong>Kecepatan Install</strong></td>
+      <td>~3–5 menit (composer install)</td>
+      <td>~30 detik (go get)</td>
+    </tr>
+    <tr>
+      <td><strong>Port Default</strong></td>
+      <td>8000 (php artisan serve)</td>
+      <td>3000 (go run main.go)</td>
+    </tr>
+    <tr>
+      <td><strong>Cara Jalankan</strong></td>
+      <td>php artisan serve<br>(butuh PHP runtime)</td>
+      <td>go run main.go<br>atau jalankan binary langsung</td>
+    </tr>
+    <tr>
+      <td><strong>Konfigurasi Awal</strong></td>
+      <td>Banyak file konfigurasi<br>(config/, .env, bootstrap/)</td>
+      <td>Minimal<br>(hanya main.go + go.mod)</td>
+    </tr>
+    <tr>
+      <td><strong>Dependency Manager</strong></td>
+      <td>Composer (composer.json)</td>
+      <td>Go Modules (go.mod)</td>
+    </tr>
+    <tr>
+      <td><strong>Output Deployment</strong></td>
+      <td>Membutuhkan web server<br>(PHP built-in/Apache/Nginx)</td>
+      <td>Binary tunggal,<br>bisa langsung dijalankan</td>
+    </tr>
+    <tr>
+      <td><strong>Cocok Untuk</strong></td>
+      <td>Aplikasi bisnis,<br>CRUD kompleks, admin panel</td>
+      <td>Microservices,<br>API ringan, performa tinggi</td>
+    </tr>
+    <tr>
+      <td><strong>Fitur Bawaan</strong></td>
+      <td>ORM, Migration, Autentikasi,<br>Queue, Scheduler</td>
+      <td>Routing, Middleware,<br>HTTP Handler</td>
+    </tr>
+  </tbody>
+</table>
 
 # Kesimpulan
 - Laravel	:  lebih cocok untuk pengembangan cepat dengan banyak fitur bawaan (ORM, autentikasi, migrasi)
