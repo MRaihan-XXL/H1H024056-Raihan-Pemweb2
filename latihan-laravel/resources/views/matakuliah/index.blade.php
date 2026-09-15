@@ -31,11 +31,11 @@
         <tbody>
             @forelse ($daftarMatakuliah as $matakuliah)
             <tr>
-                <td>{{ $matakuliah['kode'] }}</td>
-                <td>{{ $matakuliah['nama'] }}</td>
-                <td><x-badge-sks :sks="$matakuliah['sks']" /></td>
+                <td>{{ $matakuliah->kode }}</td>
+                <td>{{ $matakuliah->nama }}</td>
+                <td><x-badge-sks :sks="$matakuliah->sks" /></td>
                 <td>
-                    <a href="{{ route('matakuliah.show', $matakuliah['kode']) }}" class="btn btn-sm btn-primary">
+                    <a href="{{ route('matakuliah.show', $matakuliah->kode) }}" class="btn btn-sm btn-primary">
                         Detail
                     </a>
                 </td>

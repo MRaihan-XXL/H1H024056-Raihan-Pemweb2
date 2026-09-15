@@ -1,24 +1,31 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 
 class MahasiswaController extends Controller
 {
     public function index()
     {
-        $daftarMahasiswa = [
-            ['nim' => 'H1A123001', 'nama' => 'Andi Prasetyo', 'angkatan' => 2023],
-            ['nim' => 'H1A123002', 'nama' => 'Bunga Lestari', 'angkatan' => 2023],
-            ['nim' => 'H1A123003', 'nama' => 'Citra Ramadhani', 'angkatan' => 2024],
-        ];
-        
-        return view('mahasiswa.index', ['daftarMahasiswa' => $daftarMahasiswa]);
-    } 
-    
+        $daftarMahasiswa = Mahasiswa::orderBy('angkatan', 'desc')
+            ->orderBy('nama', 'asc')
+            ->get();
+
+        return view('mahasiswa.index', compact('daftarMahasiswa'));
+    }
+
     public function show(string $nim)
     {
-        return view('mahasiswa.show', ['nim' => $nim]);
+        $mahasiswa = Mahasiswa::with('matakuliahs')
+            ->where('nim', $nim)
+            ->firstOrFail();
+
+        $ipk = $mahasiswa->matakuliahs->isEmpty()
+            ? 0
+            : round($mahasiswa->matakuliahs->avg(fn ($matakuliah) => $matakuliah->pivot->nilai) / 25, 2);
+
+        return view('mahasiswa.show', compact('mahasiswa', 'ipk'));
     }
 
     public function cari(Request $request)
@@ -30,5 +37,28 @@ class MahasiswaController extends Controller
             'metode' => $request->method(),
             'path' => $request->path(),
         ]);
+    }
+
+    public function topIpk()
+    {
+        $mahasiswaTerbaik = Mahasiswa::query()
+            ->where('program_studi', 'Informatika')
+            ->with(['matakuliahs' => function ($query) {
+                $query->select('matakuliahs.id', 'matakuliahs.nama', 'matakuliahs.sks')
+                    ->withPivot('nilai');
+            }])
+            ->get()
+            ->map(function ($mahasiswa) {
+                $mahasiswa->ipk = $mahasiswa->matakuliahs->isEmpty()
+                    ? 0
+                    : round($mahasiswa->matakuliahs->avg(fn ($matakuliah) => $matakuliah->pivot->nilai) / 25, 2);
+
+                return $mahasiswa;
+            })
+            ->sortByDesc('ipk')
+            ->take(10)
+            ->values();
+
+        return view('mahasiswa.top-ipk', compact('mahasiswaTerbaik'));
     }
 }

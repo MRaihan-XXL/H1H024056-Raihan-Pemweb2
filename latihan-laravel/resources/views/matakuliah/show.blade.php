@@ -9,13 +9,13 @@
     <div class="card-body">
         <dl class="row mb-0">
             <dt class="col-sm-3">Kode</dt>
-            <dd class="col-sm-9">{{ $matakuliah['kode'] }}</dd>
+            <dd class="col-sm-9">{{ $matakuliah->kode }}</dd>
 
             <dt class="col-sm-3">Nama</dt>
-            <dd class="col-sm-9">{{ $matakuliah['nama'] }}</dd>
+            <dd class="col-sm-9">{{ $matakuliah->nama }}</dd>
 
             <dt class="col-sm-3">SKS</dt>
-            <dd class="col-sm-9"><x-badge-sks :sks="$matakuliah['sks']" /></dd>
+            <dd class="col-sm-9"><x-badge-sks :sks="$matakuliah->sks" /></dd>
         </dl>
     </div>
 </div>
