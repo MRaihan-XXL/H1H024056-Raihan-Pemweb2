@@ -9,7 +9,7 @@
             <p class="muted">Informatika</p>
             <h1>Daftar Mahasiswa</h1>
         </div>
-        <a href="{{ route('mahasiswa.top-ipk') }}" class="btn primary">Top 10 IPK</a>
+        <a href="{{ route('mahasiswa.top-ipk') }}" class="btn primary">10 IPK Tertinggi</a>
     </div>
 
     <table>

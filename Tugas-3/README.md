@@ -14,9 +14,9 @@
 
 ![Daftar mata kuliah](01-data-matakuliah.png)
 
-### 2. Buat relasi many to many antara `mahasiswas` dan `matakuliahs` melalui tabel pivot `mahasiswa_matakuliah` yang memiliki kolom tambahan `nilai`.
+### 2. Buat relasi banyak ke banyak antara `mahasiswas` dan `matakuliahs` melalui tabel pivot `mahasiswa_matakuliah` yang memiliki kolom tambahan `nilai`.
 
-  >Relasi many to many dibuat menggunakan tabel pivot `mahasiswa_matakuliah`. Satu mahasiswa dapat mengambil banyak mata kuliah, dan satu mata kuliah dapat diambil oleh banyak mahasiswa. Kolom `nilai` pada tabel pivot digunakan untuk menyimpan nilai mahasiswa pada mata kuliah tertentu.
+  >Relasi banyak ke banyak dibuat menggunakan tabel pivot `mahasiswa_matakuliah`. Satu mahasiswa dapat mengambil banyak mata kuliah, dan satu mata kuliah dapat diambil oleh banyak mahasiswa. Kolom `nilai` pada tabel pivot digunakan untuk menyimpan nilai mahasiswa pada mata kuliah tertentu.
   >
   >File yang digunakan:
   >
@@ -39,13 +39,13 @@ $mahasiswa = Mahasiswa::with('matakuliahs')
     ->firstOrFail();
 ```
 
-  >Data tersebut dikirim ke view `resources/views/mahasiswa/show.blade.php`. Halaman ini menampilkan identitas mahasiswa, daftar mata kuliah, SKS, nilai, dan IPK dengan skala maksimal 4.0.
+  >Data tersebut dikirim ke view `resources/views/mahasiswa/show.blade.php`. Halaman ini menampilkan identitas mahasiswa, daftar mata kuliah, SKS, nilai, dan IPK dengan skala maksimal 4,0.
 
 ![Detail mahasiswa](03-detail-mahasiswa.png)
 
 ### 4. Buat query menggunakan Eloquent untuk menampilkan sepuluh mahasiswa dengan IPK tertinggi pada program studi Informatika.
 
-  >Query dibuat pada method `topIpk()` di `MahasiswaController`. Data mahasiswa difilter berdasarkan program studi Informatika, relasi mata kuliah diload dengan `with()`, kemudian nilai rata-rata dikonversi ke skala IPK 4.0, diurutkan dari yang terbesar, dan dibatasi 10 data.
+  >Query dibuat pada method `topIpk()` di `MahasiswaController`. Data mahasiswa disaring berdasarkan program studi Informatika, relasi mata kuliah dimuat dengan `with()`, kemudian nilai rata-rata dikonversi ke skala IPK 4,0, diurutkan dari yang terbesar, dan dibatasi 10 data.
   >
   >Halaman dapat dibuka melalui:
 
@@ -66,7 +66,7 @@ php artisan serve --host=127.0.0.1 --port=8000
 
   >- http://127.0.0.1:8000/data-mahasiswa
   >- http://127.0.0.1:8000/data-matakuliah
-  >- http://127.0.0.1:8000/data-mahasiswa/H1D004056
+  >- http://127.0.0.1:8000/data-mahasiswa/H1D004001
   >- http://127.0.0.1:8000/top-ipk
 
 # F. Pertanyaan Pembahasan
@@ -87,11 +87,11 @@ protected $fillable = ['nim', 'nama', 'angkatan', 'program_studi'];
   >- `migrate:refresh` menjalankan rollback terhadap migration, kemudian menjalankannya kembali. Perintah ini digunakan untuk menyegarkan struktur database tanpa menghapus seluruh file database secara langsung.
   >- `migrate:rollback` membatalkan batch migration terakhir saja. Perintah ini cocok ketika hanya ingin membatalkan perubahan migration yang paling baru.
 
-  >Jadi, `fresh` digunakan untuk reset total, `refresh` untuk rollback dan migrate ulang, sedangkan `rollback` untuk membatalkan migration terakhir.
+  >Jadi, `fresh` digunakan untuk mengatur ulang secara total, `refresh` untuk mengembalikan lalu menjalankan migration ulang, sedangkan `rollback` untuk membatalkan migration terakhir.
 
 ### 3. Jelaskan masalah N plus 1 beserta cara mengatasinya berdasarkan pengamatan pada Langkah 12.
 
-  >Masalah N plus 1 terjadi ketika aplikasi menjalankan satu query untuk mengambil data utama, kemudian menjalankan query tambahan untuk setiap data ketika mengakses relasinya. Misalnya, aplikasi mengambil 10 mahasiswa dengan satu query, lalu mengambil mata kuliah masing-masing mahasiswa satu per satu. Jumlah query menjadi 1 + 10 query atau lebih, sehingga performanya kurang efisien.
+  >Masalah N plus 1 terjadi ketika aplikasi menjalankan satu query untuk mengambil data utama, kemudian menjalankan query tambahan untuk setiap data ketika mengakses relasinya. Misalnya, aplikasi mengambil 10 mahasiswa dengan satu query, lalu mengambil mata kuliah masing-masing mahasiswa satu per satu. Jumlah query menjadi 1 + 10 query atau lebih, sehingga kinerjanya kurang efisien.
   >
   >Contoh yang dapat menimbulkan N plus 1:
 
@@ -103,7 +103,7 @@ foreach ($mahasiswa as $data) {
 }
 ```
 
-  >Cara mengatasinya adalah menggunakan eager loading dengan `with()`:
+  >Cara mengatasinya adalah menggunakan pemuatan awal (eager loading) dengan `with()`:
 
 ```php
 $mahasiswa = Mahasiswa::with('matakuliahs')->get();

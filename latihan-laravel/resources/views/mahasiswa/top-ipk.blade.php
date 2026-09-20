@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('judul', 'Top 10 IPK Informatika')
+@section('judul', '10 IPK Tertinggi Informatika')
 
 @section('konten')
 <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
         <div>
-            <p class="muted">Ranking</p>
-            <h1>Top 10 IPK Informatika</h1>
+            <p class="muted">Peringkat</p>
+            <h1>10 IPK Tertinggi Informatika</h1>
         </div>
         <a href="{{ route('mahasiswa.index') }}" class="btn">Kembali</a>
     </div>

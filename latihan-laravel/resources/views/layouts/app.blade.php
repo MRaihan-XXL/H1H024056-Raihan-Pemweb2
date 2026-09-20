@@ -96,6 +96,49 @@
             color: #fff;
         }
 
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            flex: 1 1 260px;
+        }
+
+        .field input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #d8d3cd;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.warning {
+            background: #f4df9b;
+            color: #493b0b;
+        }
+
+        .badge.success {
+            background: #cfe8d4;
+            color: #1d5729;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
         .row {
             display: grid;
             grid-template-columns: 1fr 1.5fr;
@@ -123,6 +166,10 @@
         @media (max-width: 700px) {
             .row {
                 grid-template-columns: 1fr;
+            }
+
+            th, td {
+                white-space: nowrap;
             }
         }
     </style>

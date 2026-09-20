@@ -14,10 +14,10 @@ Route::get('/salam', function () {
 
 Route::get('/matakuliah/{kode?}', function (?string $kode = null) {
     if ($kode === null) {
-        return 'Menampilkan seluruh matakuliah';
+        return 'Menampilkan seluruh mata kuliah';
     }
 
-    return 'Menampilkan matakuliah kode ' . $kode;
+    return 'Menampilkan mata kuliah dengan kode ' . $kode;
 });
 
 Route::get('/semester/{angka}', function (int $angka) {
