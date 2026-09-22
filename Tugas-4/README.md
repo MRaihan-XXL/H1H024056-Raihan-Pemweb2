@@ -1,6 +1,6 @@
 # E. Tugas Praktikum
 
-## 1. CRUD API Mata Kuliah
+## 1. Bangun endpoint CRUD lengkap untuk resource matakuliah mengikuti pola yang sama, termasuk Form Request dan API Resource.
 
   >Saya membangun endpoint CRUD lengkap untuk resource `matakuliah`. Implementasi memakai Form Request untuk validasi dan API Resource untuk menyeragamkan respons JSON.
   >
@@ -47,7 +47,7 @@
 }
 ```
 
-## 2. Daftar Mahasiswa Berdasarkan Program Studi
+## 2. Tambahkan endpoint GET /api/program-studi/{id}/mahasiswa yang mengembalikan daftar mahasiswa pada satu program studi dengan pagination.
 
   >Endpoint ini mengembalikan daftar mahasiswa dari satu program studi dengan pagination. Pada project ini, program studi disimpan sebagai teks pada kolom `program_studi`, sehingga parameter `{id}` pada modul disesuaikan menjadi nama program studi.
 
@@ -57,7 +57,7 @@ GET /api/program-studi/Informatika/mahasiswa?per_halaman=5
 
   >Respons berisi `data`, `links`, dan `meta` karena endpoint menggunakan pagination.
 
-## 3. Parameter `fields` pada Daftar Mahasiswa
+## 3. Tambahkan parameter fields pada endpoint daftar mahasiswa yang memungkinkan klien memilih kolom yang ditampilkan.
 
   >Parameter `fields` digunakan agar klien dapat memilih kolom yang ingin ditampilkan.
 
@@ -76,7 +76,7 @@ GET /api/mahasiswa?urut=nama&arah=desc
 GET /api/mahasiswa?per_halaman=5
 ```
 
-## 4. Daftar URL untuk Pengujian dan Screenshot
+## 4. Buat dokumentasi ringkas seluruh endpoint dalam bentuk tabel yang memuat metode, URI, parameter, contoh body, dan contoh respons.
 
   >Jalankan server dari folder `latihan-laravel`:
   >
