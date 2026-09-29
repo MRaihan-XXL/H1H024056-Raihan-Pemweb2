@@ -3,8 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Http\Middleware\PeranAdmin;
+use Laravel\Sanctum\Exceptions\MissingAbilityException;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -15,9 +19,36 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'peran.admin' => PeranAdmin::class,
+            'ability' => CheckAbilities::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (
+            AuthenticationException $exception,
+            Request $request
+        ) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'sukses' => false,
+                    'pesan' => 'Token tidak valid atau belum dikirim.',
+                ], 401);
+            }
+        });
+
+        $exceptions->render(function (
+            MissingAbilityException $exception,
+            Request $request
+        ) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'sukses' => false,
+                    'pesan' => 'Token tidak memiliki kemampuan yang cukup.',
+                ], 403);
+            }
+        });
+
         $exceptions->render(function (
             NotFoundHttpException $exception,
             Request $request
