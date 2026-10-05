@@ -17,12 +17,18 @@ Route::get('/status', function () {
     ]);
 });
 
+Route::apiResource('matakuliah', MatakuliahController::class);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/profil', [AuthController::class, 'profil']);
     Route::put('/auth/password', [AuthController::class, 'ubahPassword']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/logout-semua', [AuthController::class, 'logoutSemua']);
 
-    Route::get('/program-studi/{programStudi}/mahasiswa', [MahasiswaController::class, 'berdasarkanProgramStudi']);
+    Route::get(
+        '/program-studi/{programStudi}/mahasiswa',
+        [MahasiswaController::class, 'berdasarkanProgramStudi']
+    );
     Route::get('/mahasiswa', [MahasiswaController::class, 'index']);
     Route::get('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'show']);
     Route::post('/mahasiswa', [MahasiswaController::class, 'store'])
@@ -33,6 +39,4 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('ability:mahasiswa:tulis');
     Route::delete('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'destroy'])
         ->middleware(['ability:mahasiswa:tulis', 'peran.admin']);
-
-    Route::apiResource('matakuliah', MatakuliahController::class);
 });

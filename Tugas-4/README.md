@@ -1,156 +1,110 @@
 # E. Tugas Praktikum
 
-## 1. Bangun endpoint CRUD lengkap untuk resource matakuliah mengikuti pola yang sama, termasuk Form Request dan API Resource.
+### 1. Tambahkan tabel `matakuliahs` dengan kolom `kode`, `nama`, `sks`, dan `semester` beserta model dan seedernya.
 
-> Saya membangun endpoint CRUD lengkap untuk resource `matakuliah`. Implementasi memakai Form Request untuk validasi dan API Resource untuk menyeragamkan respons JSON.
->
-> File yang digunakan:
->
-> - `latihan-laravel/app/Http/Controllers/Api/MatakuliahController.php`
-> - `latihan-laravel/app/Http/Requests/StoreMatakuliahRequest.php`
-> - `latihan-laravel/app/Http/Requests/UpdateMatakuliahRequest.php`
-> - `latihan-laravel/app/Http/Resources/MatakuliahResource.php`
-> - `latihan-laravel/routes/api.php`
+  >Pada praktikum ini saya membuat migration untuk tabel `matakuliahs`, model `Matakuliah`, dan `MatakuliahSeeder`. Seeder digunakan untuk mengisi data beberapa mata kuliah sehingga data dapat langsung ditampilkan pada halaman Laravel.
+  >
+  >File yang digunakan:
+  >
+  >- `latihan-laravel/database/migrations/2026_09_15_000002_create_matakuliahs_table.php`
+  >- `latihan-laravel/app/Models/Matakuliah.php`
+  >- `latihan-laravel/database/seeders/MatakuliahSeeder.php`
+  >
+  >Hasil halaman daftar mata kuliah:
 
-| Metode | URI | Parameter | Contoh body | Respons berhasil |
-|---|---|---|---|---|
-| GET | `/api/matakuliah` | `cari`, `semester`, `urut`, `arah`, `per_halaman` | Tidak ada | Daftar data dengan `data`, `links`, dan `meta` |
-| GET | `/api/matakuliah/{id}` | `id` mata kuliah | Tidak ada | Satu data mata kuliah |
-| POST | `/api/matakuliah` | Tidak ada | `kode`, `nama`, `sks`, `semester` | Status `201` dan data baru |
-| PUT/PATCH | `/api/matakuliah/{id}` | `id` mata kuliah | Kolom yang ingin diubah | Status `200` dan data terbaru |
-| DELETE | `/api/matakuliah/{id}` | `id` mata kuliah | Tidak ada | Pesan berhasil dihapus |
+![Daftar mata kuliah](01-data-matakuliah.png)
 
-> Contoh body POST:
+### 2. Buat relasi banyak ke banyak antara `mahasiswas` dan `matakuliahs` melalui tabel pivot `mahasiswa_matakuliah` yang memiliki kolom tambahan `nilai`.
 
-```json
-{
-    "kode": "IF601",
-    "nama": "Pemrograman API",
-    "sks": 3,
-    "semester": 6
-}
+  >Relasi banyak ke banyak dibuat menggunakan tabel pivot `mahasiswa_matakuliah`. Satu mahasiswa dapat mengambil banyak mata kuliah, dan satu mata kuliah dapat diambil oleh banyak mahasiswa. Kolom `nilai` pada tabel pivot digunakan untuk menyimpan nilai mahasiswa pada mata kuliah tertentu.
+  >
+  >File yang digunakan:
+  >
+  >- `latihan-laravel/database/migrations/2026_09_15_000004_create_mahasiswa_matakuliah_table.php`
+  >- `latihan-laravel/app/Models/Mahasiswa.php`
+  >- `latihan-laravel/app/Models/Matakuliah.php`
+  >- `latihan-laravel/database/seeders/DatabaseSeeder.php`
+  >
+  >Relasi pada model menggunakan `belongsToMany()` dan `withPivot('nilai')`.
+
+![Relasi mahasiswa dan mata kuliah](02-relasi-many-to-many.png)
+
+### 3. Tampilkan halaman detail mahasiswa yang memuat daftar mata kuliah yang diambil beserta nilainya.
+
+  >Halaman detail mahasiswa dibuat pada controller `MahasiswaController` dengan eager loading:
+
+```php
+$mahasiswa = Mahasiswa::with('matakuliahs')
+    ->where('nim', $nim)
+    ->firstOrFail();
 ```
 
-> Contoh respons POST:
+  >Data tersebut dikirim ke view `resources/views/mahasiswa/show.blade.php`. Halaman ini menampilkan identitas mahasiswa, daftar mata kuliah, SKS, nilai, dan IPK dengan skala maksimal 4,0.
 
-```json
-{
-    "sukses": true,
-    "pesan": "Mata kuliah berhasil dibuat",
-    "data": {
-        "id": 11,
-        "kode": "IF601",
-        "nama": "Pemrograman API",
-        "sks": 3,
-        "semester": 6
-    }
-}
-```
+![Detail mahasiswa](03-detail-mahasiswa.png)
 
-## 2. Tambahkan endpoint GET /api/program-studi/{id}/mahasiswa yang mengembalikan daftar mahasiswa pada satu program studi dengan pagination.
+### 4. Buat query menggunakan Eloquent untuk menampilkan sepuluh mahasiswa dengan IPK tertinggi pada program studi Informatika.
 
-> Endpoint ini mengembalikan daftar mahasiswa dari satu program studi dengan pagination. Pada project ini, program studi disimpan sebagai teks pada kolom `program_studi`, sehingga parameter `{id}` pada modul disesuaikan menjadi nama program studi.
+  >Query dibuat pada method `topIpk()` di `MahasiswaController`. Data mahasiswa disaring berdasarkan program studi Informatika, relasi mata kuliah dimuat dengan `with()`, kemudian nilai rata-rata dikonversi ke skala IPK 4,0, diurutkan dari yang terbesar, dan dibatasi 10 data.
+  >
+  >Halaman dapat dibuka melalui:
 
 ```text
-GET /api/program-studi/Informatika/mahasiswa?per_halaman=5
+http://127.0.0.1:8000/top-ipk
 ```
 
-> Respons berisi `data`, `links`, dan `meta` karena endpoint menggunakan pagination.
+![Sepuluh mahasiswa dengan IPK tertinggi](04-top-ipk.png)
 
-## 3. Tambahkan parameter fields pada endpoint daftar mahasiswa yang memungkinkan klien memilih kolom yang ditampilkan.
-
-> Parameter `fields` digunakan agar klien dapat memilih kolom yang ingin ditampilkan.
-
-```text
-GET /api/mahasiswa?fields=nim,nama,angkatan
-```
-
-> Kolom yang diizinkan adalah `nim`, `nama`, `angkatan`, dan `program_studi`. Kolom yang tidak terdaftar akan diabaikan.
->
-> Parameter lain yang tersedia:
-
-```text
-GET /api/mahasiswa?cari=Rina
-GET /api/mahasiswa?angkatan=2024
-GET /api/mahasiswa?urut=nama&arah=desc
-GET /api/mahasiswa?per_halaman=5
-```
-
-## 4. Buat dokumentasi ringkas seluruh endpoint dalam bentuk tabel yang memuat metode, URI, parameter, contoh body, dan contoh respons.
-
-> Jalankan server dari folder `latihan-laravel`:
+  >Untuk menjalankan dan mengambil screenshot halaman, saya menggunakan perintah berikut dari folder `latihan-laravel`:
 
 ```powershell
-cd "C:\Users\WORKPLUS\Downloads\H1H024056-Raihan-Pemweb2\latihan-laravel"
+php artisan migrate:fresh --seed
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-> Jika terminal tetap berada di folder utama project, gunakan:
+  >Link halaman yang didokumentasikan:
 
-```powershell
-php "C:\Users\WORKPLUS\Downloads\H1H024056-Raihan-Pemweb2\latihan-laravel\artisan" serve --host=127.0.0.1 --port=8000
-```
-
-> Buka URL berikut di browser dan jadikan screenshot:
->
-> 1. http://127.0.0.1:8000/api/status
-> 2. http://127.0.0.1:8000/api/mahasiswa
-> 3. http://127.0.0.1:8000/api/mahasiswa?fields=nim,nama,angkatan
-> 4. http://127.0.0.1:8000/api/matakuliah
-> 5. http://127.0.0.1:8000/api/program-studi/Informatika/mahasiswa?per_halaman=5
-> 6. http://127.0.0.1:8000/api/matakuliah/1
->
-> Untuk POST, PUT, PATCH, dan DELETE gunakan Postman atau Insomnia karena browser biasa paling mudah digunakan untuk GET.
+  >- http://127.0.0.1:8000/data-mahasiswa
+  >- http://127.0.0.1:8000/data-matakuliah
+  >- http://127.0.0.1:8000/data-mahasiswa/H1D004001
+  >- http://127.0.0.1:8000/top-ipk
 
 # F. Pertanyaan Pembahasan
 
-## 1. Mengapa penamaan URI sebaiknya menggunakan kata benda jamak dan bukan kata kerja?
+### 1. Jelaskan fungsi properti `$fillable` dan risiko yang muncul apabila properti tersebut diabaikan.
 
-> URI sebaiknya menggunakan kata benda jamak karena URI mewakili resource atau kumpulan data, bukan tindakan. Contohnya `/api/mahasiswa` untuk kumpulan data mahasiswa dan `/api/matakuliah` untuk kumpulan data mata kuliah.
->
-> Tindakan sudah diwakili oleh metode HTTP. `GET` digunakan untuk membaca, `POST` untuk menambah, `PUT` atau `PATCH` untuk memperbarui, dan `DELETE` untuk menghapus data. Dengan demikian, URI menjadi konsisten dan mudah dipahami.
->
-> URI seperti `/api/getMahasiswa` kurang tepat karena kata `get` sudah diwakili oleh metode HTTP `GET`.
+  >`$fillable` adalah properti pada model Eloquent yang digunakan untuk menentukan kolom mana saja yang boleh diisi melalui mass assignment, misalnya menggunakan method `create()` atau `fill()`. Pada model `Mahasiswa`, properti tersebut berisi kolom yang memang boleh diisi:
 
-## 2. Jelaskan perbedaan status 401 dan 403 beserta contoh kasusnya.
-
-> Status `401 Unauthorized` berarti permintaan belum memiliki autentikasi yang valid. Contohnya pengguna mengakses endpoint yang membutuhkan token, tetapi tidak mengirimkan token atau tokennya sudah tidak berlaku.
->
-> Status `403 Forbidden` berarti pengguna sudah berhasil dikenali, tetapi tidak memiliki izin untuk melakukan tindakan tersebut. Contohnya pengguna biasa mencoba menghapus data, sedangkan hanya administrator yang memiliki izin menghapus.
-
-## 3. Apa risiko keamanan apabila parameter pengurutan pada langkah 5 diterima tanpa pemeriksaan daftar kolom yang diizinkan?
-
-> Jika parameter pengurutan langsung dimasukkan ke `orderBy()` tanpa pemeriksaan, klien dapat mengirim nama kolom atau ekspresi SQL yang tidak seharusnya digunakan. Hal ini dapat menyebabkan manipulasi query, kebocoran informasi, atau kesalahan pada basis data.
->
-> Pada project ini, parameter urut diperiksa menggunakan daftar kolom yang diizinkan:
->
 ```php
-$kolomDiizinkan = ['nim', 'nama', 'angkatan', 'program_studi'];
-if (in_array($urut, $kolomDiizinkan, true)) {
-    $query->orderBy($urut, $arah);
+protected $fillable = ['nim', 'nama', 'angkatan', 'program_studi'];
+```
+
+  >Jika `$fillable` diabaikan, kolom yang tidak seharusnya dapat diubah mungkin ikut terisi dari input pengguna. Hal ini dapat menyebabkan mass assignment vulnerability. Sebagai contoh, pengguna dapat mencoba mengubah kolom sensitif seperti `is_admin`, `role`, atau `status`. Oleh karena itu, `$fillable` penting untuk membatasi data yang boleh masuk ke model dan menjaga keamanan aplikasi.
+
+### 2. Apa perbedaan `migrate:fresh`, `migrate:refresh`, dan `migrate:rollback`?
+
+  >- `migrate:fresh` menghapus semua tabel, kemudian menjalankan seluruh migration dari awal. Perintah ini cocok digunakan saat ingin membuat ulang database secara total, terutama ketika pengembangan dan pengujian.
+  >- `migrate:refresh` menjalankan rollback terhadap migration, kemudian menjalankannya kembali. Perintah ini digunakan untuk menyegarkan struktur database tanpa menghapus seluruh file database secara langsung.
+  >- `migrate:rollback` membatalkan batch migration terakhir saja. Perintah ini cocok ketika hanya ingin membatalkan perubahan migration yang paling baru.
+
+  >Jadi, `fresh` digunakan untuk mengatur ulang secara total, `refresh` untuk mengembalikan lalu menjalankan migration ulang, sedangkan `rollback` untuk membatalkan migration terakhir.
+
+### 3. Jelaskan masalah N plus 1 beserta cara mengatasinya berdasarkan pengamatan pada Langkah 12.
+
+  >Masalah N plus 1 terjadi ketika aplikasi menjalankan satu query untuk mengambil data utama, kemudian menjalankan query tambahan untuk setiap data ketika mengakses relasinya. Misalnya, aplikasi mengambil 10 mahasiswa dengan satu query, lalu mengambil mata kuliah masing-masing mahasiswa satu per satu. Jumlah query menjadi 1 + 10 query atau lebih, sehingga kinerjanya kurang efisien.
+  >
+  >Contoh yang dapat menimbulkan N plus 1:
+
+```php
+$mahasiswa = Mahasiswa::all();
+
+foreach ($mahasiswa as $data) {
+    echo $data->matakuliahs;
 }
 ```
->
-> Arah pengurutan juga dibatasi hanya menjadi `asc` atau `desc`.
 
-## 4. Mengapa API Resource lebih baik daripada mengembalikan model secara langsung?
+  >Cara mengatasinya adalah menggunakan pemuatan awal (eager loading) dengan `with()`:
 
-> API Resource memberikan lapisan untuk menentukan data apa saja yang boleh dikirim ke klien. Dengan begitu, data internal atau kolom sensitif tidak ikut terbuka secara tidak sengaja.
->
-> API Resource juga membuat format respons konsisten, memudahkan perubahan struktur database tanpa langsung mengubah kontrak API, dan memudahkan penambahan data turunan atau relasi.
->
-> Pada project ini, `MahasiswaResource` dan `MatakuliahResource` menentukan format JSON yang dikirim melalui API, sehingga respons lebih rapi dan terkontrol.
-
-## 5. Apa yang dimaksud dengan endpoint yang RESTful?
-
-> Endpoint RESTful adalah endpoint yang memetakan operasi CRUD ke metode HTTP yang sesuai. Satu resource seperti `mahasiswa` dipetakan ke URI `/api/mahasiswa` dan kemudian diakses dengan `GET`, `POST`, `PUT`, `PATCH`, atau `DELETE` sesuai kebutuhan.
->
-> Dengan cara ini, API lebih mudah dipahami, konsisten, dan dapat digunakan oleh client dari berbagai platform.
-
-## 6. Mengapa semua request API sebaiknya menggunakan format JSON?
-
-> Format JSON merupakan standar umum untuk transfer data antar aplikasi karena ringkas, mudah dibaca, dan didukung hampir seluruh bahasa pemrograman. Dengan JSON, request body dan response body lebih konsisten dibandingkan format teks manual.
->
-> Dalam project Laravel, semua respons API dibuat dalam format JSON agar mudah diproses oleh frontend, Postman, maupun aplikasi mobile.
-
-
+```php
+$mahasiswa = Mahasiswa::with('matakuliahs')->get();
+```

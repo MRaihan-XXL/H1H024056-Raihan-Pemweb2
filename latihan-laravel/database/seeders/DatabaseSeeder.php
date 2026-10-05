@@ -6,7 +6,6 @@ use App\Models\Mahasiswa;
 use App\Models\Matakuliah;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@unsoed.ac.id'],
             [
                 'name' => 'Administrator',
-                'password' => Hash::make('rahasia123'),
+                'password' => 'rahasia123',
                 'peran' => 'admin',
             ]
         );
@@ -30,7 +29,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'mahasiswa@unsoed.ac.id'],
             [
                 'name' => 'Pengguna Mahasiswa',
-                'password' => Hash::make('rahasia123'),
+                'password' => 'rahasia123',
                 'peran' => 'mahasiswa',
             ]
         );

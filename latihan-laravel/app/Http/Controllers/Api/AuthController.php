@@ -19,9 +19,7 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
         ]);
 
-        $data['password'] = Hash::make($data['password']);
         $data['peran'] = 'mahasiswa';
-
         $pengguna = User::create($data);
         $token = $pengguna->createToken('token-perangkat', ['mahasiswa:baca'])->plainTextToken;
 
@@ -67,7 +65,6 @@ class AuthController extends Controller
     public function profil(Request $request): JsonResponse
     {
         $pengguna = $request->user();
-        $token = $pengguna->currentAccessToken();
 
         return response()->json([
             'sukses' => true,
@@ -77,7 +74,7 @@ class AuthController extends Controller
                 'email' => $pengguna->email,
                 'peran' => $pengguna->peran,
                 'terakhir_login' => $pengguna->terakhir_login,
-                'kemampuan' => $token?->abilities ?? [],
+                'kemampuan' => $pengguna->currentAccessToken()?->abilities ?? [],
             ],
         ]);
     }
@@ -86,7 +83,11 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'kata_sandi_lama' => ['required', 'string'],
-            'kata_sandi_baru' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'kata_sandi_baru' => [
+                'required',
+                'confirmed',
+                Password::min(8)->letters()->numbers(),
+            ],
         ]);
 
         $pengguna = $request->user();
@@ -98,7 +99,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $pengguna->update(['password' => Hash::make($data['kata_sandi_baru'])]);
+        $pengguna->update(['password' => $data['kata_sandi_baru']]);
 
         return response()->json([
             'sukses' => true,
@@ -116,7 +117,17 @@ class AuthController extends Controller
         ]);
     }
 
-    private function dataPengguna(User $pengguna, ?string $token = null): array
+    public function logoutSemua(Request $request): JsonResponse
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'sukses' => true,
+            'pesan' => 'Seluruh sesi perangkat telah diakhiri',
+        ]);
+    }
+
+    private function dataPengguna(User $pengguna, string $token): array
     {
         return [
             'pengguna' => [
@@ -126,7 +137,7 @@ class AuthController extends Controller
                 'peran' => $pengguna->peran,
                 'terakhir_login' => $pengguna->terakhir_login,
             ],
-            ...($token === null ? [] : ['token' => $token]),
+            'token' => $token,
         ];
     }
 }
