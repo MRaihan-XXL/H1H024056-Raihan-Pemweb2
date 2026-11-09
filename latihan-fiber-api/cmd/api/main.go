@@ -17,6 +17,16 @@ import (
 func main() {
 	konf := config.Muat()
 
+	if err := config.HubungkanBasisData(konf); err != nil {
+		log.Fatal("Gagal terhubung ke basis data: ", err)
+	}
+	if err := config.Migrasi(); err != nil {
+		log.Fatal("Gagal menjalankan migrasi: ", err)
+	}
+	if err := config.DataAwal(); err != nil {
+		log.Fatal("Gagal membuat data awal: ", err)
+	}
+
 	app := fiber.New(fiber.Config{
 		AppName:      konf.NamaAplikasi,
 		ErrorHandler: penanganGalat,
