@@ -3,12 +3,12 @@
  
 ### 1. Tambahkan resource matakuliah dengan CRUD lengkap mengikuti pola repository dan handler yang sama.
  
-Resource mata kuliah telah dibuat dengan model, repository, handler, dan route terpisah. Endpoint yang tersedia adalah `GET /api/matakuliah`, `GET /api/matakuliah/:id`, `POST /api/matakuliah`, `PUT /api/matakuliah/:id`, dan `DELETE /api/matakuliah/:id`.
+  >Resource mata kuliah telah dibuat dengan model, repository, handler, dan route terpisah. Endpoint yang tersedia adalah `GET /api/matakuliah`, `GET /api/matakuliah/:id`, `POST /api/matakuliah`, `PUT /api/matakuliah/:id`, dan `DELETE /api/matakuliah/:id`.
 
-Model: [`matakuliah.go`](../latihan-fiber-api/internal/model/matakuliah.go)  
-Repository: [`matakuliah_repository.go`](../latihan-fiber-api/internal/repository/matakuliah_repository.go)  
-Handler: [`matakuliah_handler.go`](../latihan-fiber-api/internal/handler/matakuliah_handler.go)  
-Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
+  >Model: [`matakuliah.go`](../latihan-fiber-api/internal/model/matakuliah.go)  
+  >Repository: [`matakuliah_repository.go`](../latihan-fiber-api/internal/repository/matakuliah_repository.go)  
+  >Handler: [`matakuliah_handler.go`](../latihan-fiber-api/internal/handler/matakuliah_handler.go)  
+  >Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
  
 ![alt text](01-crud-matakuliah.png)
 
@@ -16,10 +16,10 @@ Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
  
 ### 2. Tambahkan endpoint GET /api/program-studi beserta jumlah mahasiswa pada setiap program studi.
  
-Endpoint `GET /api/program-studi` menampilkan data setiap program studi beserta jumlah mahasiswanya. Perhitungan menggunakan `LEFT JOIN` dan tidak menyertakan mahasiswa yang sudah di-soft-delete.
+  >Endpoint `GET /api/program-studi` menampilkan data setiap program studi beserta jumlah mahasiswanya. Perhitungan menggunakan `LEFT JOIN` dan tidak menyertakan mahasiswa yang sudah di-soft-delete.
 
-Repository: [`program_studi_repository.go`](../latihan-fiber-api/internal/repository/program_studi_repository.go)  
-Handler: [`program_studi_handler.go`](../latihan-fiber-api/internal/handler/program_studi_handler.go)
+  >Repository: [`program_studi_repository.go`](../latihan-fiber-api/internal/repository/program_studi_repository.go)  
+  >Handler: [`program_studi_handler.go`](../latihan-fiber-api/internal/handler/program_studi_handler.go)
  
 ![alt text](02-program-studi.png)
 
@@ -27,12 +27,12 @@ Handler: [`program_studi_handler.go`](../latihan-fiber-api/internal/handler/prog
  
 ### 3. Terapkan soft delete pada model Mahasiswa menggunakan gorm.DeletedAt, lalu tambahkan endpoint pemulihan data.
  
-Model mahasiswa menggunakan `gorm.DeletedAt`. Data yang dihapus dapat dipulihkan melalui `POST /api/mahasiswa/:id/pulihkan`. Endpoint mahasiswa memerlukan header `X-Api-Key`. Setelah soft delete, detail mahasiswa mengembalikan status `404`; setelah dipulihkan, data dapat diakses kembali.
+  >Model mahasiswa menggunakan `gorm.DeletedAt`. Data yang dihapus dapat dipulihkan melalui `POST /api/mahasiswa/:id/pulihkan`. Endpoint mahasiswa memerlukan header `X-Api-Key`. Setelah soft delete, detail mahasiswa mengembalikan status `404`; setelah dipulihkan, data dapat diakses kembali.
 
-Model: [`mahasiswa.go`](../latihan-fiber-api/internal/model/mahasiswa.go)  
-Repository: [`mahasiswa_repository.go`](../latihan-fiber-api/internal/repository/mahasiswa_repository.go)  
-Handler: [`mahasiswa_handler.go`](../latihan-fiber-api/internal/handler/mahasiswa_handler.go)  
-Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
+  >Model: [`mahasiswa.go`](../latihan-fiber-api/internal/model/mahasiswa.go)  
+  >Repository: [`mahasiswa_repository.go`](../latihan-fiber-api/internal/repository/mahasiswa_repository.go)  
+  >Handler: [`mahasiswa_handler.go`](../latihan-fiber-api/internal/handler/mahasiswa_handler.go)  
+  >Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
  
 ![alt text](03-soft-delete.png)
 
@@ -40,16 +40,14 @@ Route: [`router.go`](../latihan-fiber-api/internal/router/router.go)
  
 ### 4. Bandingkan jumlah baris kode yang dibutuhkan untuk membangun endpoint CRUD pada Laravel dan pada Fiber, kemudian analisis penyebab perbedaannya.
 
-Jumlah LOC menghitung baris kode yang tidak kosong dan bukan komentar. Cakupan perhitungan meliputi model, handler/controller, repository Fiber, validasi, resource, helper bersama, dan deklarasi route CRUD. Konfigurasi aplikasi serta migrasi awal tidak dihitung.
+  >Jumlah LOC menghitung baris kode yang tidak kosong dan bukan komentar. Cakupan perhitungan meliputi model, handler/controller, repository Fiber, validasi, resource, helper bersama, dan deklarasi route CRUD. Konfigurasi aplikasi serta migrasi awal tidak dihitung.
 
-| Framework | Rincian berkas | Total LOC |
-|---|---|---:|
-| Laravel | Controller (76) + Store Request (27) + Update Request (26) + Resource (17) + Model (16) + route (1) | **163** |
-| Fiber + GORM | Handler (135) + Repository (24) + Model (11) + helper bersama (26) + routes (6) | **202** |
+  >| Framework | Rincian berkas | Total LOC |
+  >|---|---|---:|
+  >| Laravel | Controller (76) + Store Request (27) + Update Request (26) + Resource (17) + Model (16) + route (1) | **163** |
+  >| Fiber + GORM | Handler (135) + Repository (24) + Model (11) + helper bersama (26) + routes (6) | **202** |
 
-Fiber membutuhkan 39 LOC lebih banyak (sekitar 23,9%) pada cakupan ini. Laravel mendaftarkan CRUD dengan satu `apiResource`, menggunakan Eloquent untuk operasi basis data, serta memisahkan validasi dan serialisasi ke Form Request dan Resource. Fiber mendaftarkan setiap route secara eksplisit, memisahkan handler dari repository, dan menangani validasi serta status error di kode aplikasi. Angka ini khusus untuk implementasi pada repositori ini; controller Laravel yang dihitung juga memiliki filter, pengurutan, dan pagination tambahan.
-
-![alt text](04-perbandingan-loc.png)
+  >Fiber membutuhkan 39 LOC lebih banyak (sekitar 23,9%) pada cakupan ini. Laravel mendaftarkan CRUD dengan satu `apiResource`, menggunakan Eloquent untuk operasi basis data, serta memisahkan validasi dan serialisasi ke Form Request dan Resource. Fiber mendaftarkan setiap route secara eksplisit, memisahkan handler dari repository, dan menangani validasi serta status error di kode aplikasi. Angka ini khusus untuk implementasi pada repositori ini; controller Laravel yang dihitung juga memiliki filter, pengurutan, dan pagination tambahan.
 
 
  
