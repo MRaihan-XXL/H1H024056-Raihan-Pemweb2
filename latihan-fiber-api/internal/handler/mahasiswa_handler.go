@@ -11,11 +11,12 @@ import (
 
 	"latihan-fiber-api/internal/model"
 	"latihan-fiber-api/internal/repository"
+	"latihan-fiber-api/internal/validasi"
 )
 
 type PermintaanMahasiswa struct {
 	ProgramStudiID uint    `json:"program_studi_id"`
-	Nim            string  `json:"nim"`
+	Nim            string  `json:"nim" validate:"required,nim"`
 	Nama           string  `json:"nama"`
 	Email          string  `json:"email"`
 	Angkatan       int     `json:"angkatan"`
@@ -25,7 +26,7 @@ type PermintaanMahasiswa struct {
 
 type PembaruanMahasiswa struct {
 	ProgramStudiID *uint    `json:"program_studi_id"`
-	Nim            *string  `json:"nim"`
+	Nim            *string  `json:"nim" validate:"omitempty,nim"`
 	Nama           *string  `json:"nama"`
 	Email          *string  `json:"email"`
 	Angkatan       *int     `json:"angkatan"`
@@ -250,6 +251,13 @@ func validasiMahasiswa(permintaan PermintaanMahasiswa) error {
 		permintaan.Angkatan <= 0 {
 		return fiber.NewError(fiber.StatusBadRequest, "Program studi, NIM, nama, email, dan angkatan wajib diisi")
 	}
+	galatNIM, err := validasi.PeriksaNIM(strings.TrimSpace(permintaan.Nim))
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Gagal memvalidasi NIM")
+	}
+	if len(galatNIM) > 0 {
+		return fiber.NewError(fiber.StatusBadRequest, galatNIM[0].Pesan)
+	}
 	if permintaan.Email != "" {
 		alamat, err := mail.ParseAddress(strings.TrimSpace(permintaan.Email))
 		if err != nil || alamat.Address != strings.TrimSpace(permintaan.Email) {
@@ -268,6 +276,15 @@ func validasiPembaruanMahasiswa(permintaan PembaruanMahasiswa) error {
 	}
 	if permintaan.Nim != nil && strings.TrimSpace(*permintaan.Nim) == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "NIM tidak boleh kosong")
+	}
+	if permintaan.Nim != nil {
+		galatNIM, err := validasi.PeriksaNIM(strings.TrimSpace(*permintaan.Nim))
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Gagal memvalidasi NIM")
+		}
+		if len(galatNIM) > 0 {
+			return fiber.NewError(fiber.StatusBadRequest, galatNIM[0].Pesan)
+		}
 	}
 	if permintaan.Nama != nil && strings.TrimSpace(*permintaan.Nama) == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "Nama tidak boleh kosong")

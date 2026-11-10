@@ -11,6 +11,8 @@ func Migrasi() error {
 		&model.ProgramStudi{},
 		&model.Mahasiswa{},
 		&model.Matakuliah{},
+		&model.Pengguna{},
+		&model.TokenDiblokir{},
 	); err != nil {
 		return fmt.Errorf("menjalankan migrasi: %w", err)
 	}

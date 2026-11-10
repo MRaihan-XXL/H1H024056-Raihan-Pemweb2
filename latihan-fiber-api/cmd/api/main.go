@@ -17,6 +17,10 @@ import (
 func main() {
 	konf := config.Muat()
 
+	if len([]byte(konf.JwtSecret)) < 32 {
+		log.Fatal("JWT_SECRET wajib diatur dengan nilai acak minimal 32 byte")
+	}
+
 	if err := config.HubungkanBasisData(konf); err != nil {
 		log.Fatal("Gagal terhubung ke basis data: ", err)
 	}

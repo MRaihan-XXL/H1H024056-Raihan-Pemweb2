@@ -16,6 +16,16 @@ func Daftarkan(app *fiber.App, kunciAPI string) {
 		})
 	})
 
+	auth := api.Group("/auth")
+	auth.Post("/registrasi", handler.Registrasi)
+	auth.Post("/login", handler.Login)
+
+	authTerproteksi := api.Group("/auth")
+	authTerproteksi.Use(middleware.Autentikasi())
+	authTerproteksi.Get("/profil", handler.Profil)
+	authTerproteksi.Post("/segarkan", handler.Segarkan)
+	authTerproteksi.Post("/logout", handler.Logout)
+
 	mahasiswa := api.Group("/mahasiswa")
 	mahasiswa.Use(middleware.KunciApi(kunciAPI))
 
