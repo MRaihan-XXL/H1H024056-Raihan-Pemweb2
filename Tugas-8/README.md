@@ -1,12 +1,16 @@
 # E. Tugas Praktikum
 
+>Catatan screenshot: fitur autentikasi Fiber ini berupa REST API, bukan halaman website, jadi tidak ada tampilan web login/refresh yang bisa dibuka langsung. Untuk bukti hasil request, buka [Postman Web](https://web.postman.co/) dan kirim request ke API lokal. Untuk bukti kode, klik tautan file yang dicantumkan lalu ambil screenshot di editor. Screenshot basis data diambil dari klien MySQL. Cukup siapkan gambar `01` sampai `09` di bawah; bagian analisis nomor 4 tidak memerlukan screenshot tersendiri.
+
 ### 1. Tambahkan endpoint `POST /api/auth/segarkan` yang menerbitkan token baru berdasarkan token yang masih berlaku.
 
   >Endpoint refresh hanya menerima JWT yang masih berlaku. Respons berisi token baru; token lama langsung dimasukkan ke daftar hitam agar tidak dapat digunakan kembali.
   >
   >File yang digunakan: [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go) (`Segarkan`), [`router.go`](../latihan-fiber-api/internal/router/router.go), [`token.go`](../latihan-fiber-api/internal/auth/token.go), dan [`autentikasi.go`](../latihan-fiber-api/internal/middleware/autentikasi.go).
   >
-  >Screenshot kode: buka `Segarkan` di `auth_handler.go` dan route `POST /auth/segarkan` di `router.go`. Screenshot Postman: kirim `POST /api/auth/segarkan` dengan header `Authorization` berisi skema `Bearer` dan token yang masih berlaku. Simpan sebagai `01-segarkan-kode.png` dan `02-segarkan-berhasil.png`. Ambil juga screenshot respons `401` saat token lama dipakai kembali sebagai `03-token-lama-setelah-refresh.png`. Samarkan seluruh nilai token.
+  >**01 — kode:** klik [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), buka fungsi `Segarkan`, lalu ambil screenshot kode.<br>
+  >**02 — berhasil:** di [Postman Web](https://web.postman.co/), pilih metode `POST` dan alamat `http://localhost:3000/api/auth/segarkan`. Pada tab Authorization atur tipe Bearer dan masukkan token hasil login, lalu klik **Send**. Screenshot respons berhasil.<br>
+  >**03 — token lama:** kirim ulang request yang sama dengan token sebelum refresh. Screenshot respons `401`. Samarkan token pada seluruh gambar.
 
 ![Cuplikan handler dan route refresh token](01-segarkan-kode.png)
 
@@ -20,7 +24,8 @@
   >
   >File yang digunakan: [`validasi.go`](../latihan-fiber-api/internal/validasi/validasi.go) dan [`mahasiswa_handler.go`](../latihan-fiber-api/internal/handler/mahasiswa_handler.go).
   >
-  >Screenshot kode: tampilkan pendaftaran tag `nim` dan pemanggilan `PeriksaNIM`. Screenshot hasil API: uji satu NIM valid dan satu NIM tidak valid pada `POST /api/mahasiswa` (sertakan `X-Api-Key` tanpa memperlihatkan nilainya). Simpan sebagai `04-validasi-nim-kode.png` dan `05-validasi-nim-api.png`.
+  >**04 — kode:** klik [`validasi.go`](../latihan-fiber-api/internal/validasi/validasi.go), lalu tampilkan aturan `nim`.<br>
+  >**05 — hasil:** di [Postman Web](https://web.postman.co/), pilih `POST` dan alamat `http://localhost:3000/api/mahasiswa`. Pada tab Headers isi `X-Api-Key` dengan API key lokal; pada tab Body pilih raw JSON. Kirim data sekali dengan NIM valid (misalnya `H12345678`) dan sekali dengan NIM tidak valid. Screenshot kedua hasil/status respons; jangan tampilkan API key.
 
 ![Aturan validasi kustom NIM](04-validasi-nim-kode.png)
 
@@ -32,7 +37,10 @@
   >
   >File yang digunakan: [`pengguna.go`](../latihan-fiber-api/internal/model/pengguna.go), [`migrasi.go`](../latihan-fiber-api/internal/config/migrasi.go), [`token_blacklist_repository.go`](../latihan-fiber-api/internal/repository/token_blacklist_repository.go), [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), dan [`autentikasi.go`](../latihan-fiber-api/internal/middleware/autentikasi.go).
   >
-  >Screenshot kode: tampilkan model tabel, fungsi `CabutToken`, middleware, dan handler `Logout`. Screenshot hasil: ambil respons logout `200`, baris JTI pada tabel `token_blacklists` melalui klien basis data, lalu respons `401` ketika token yang sama dipakai untuk `GET /api/auth/profil`. Simpan sebagai `06-blacklist-kode.png`, `07-logout-berhasil.png`, `08-token-blacklist-di-database.png`, dan `09-token-ditolak-setelah-logout.png`. Samarkan token dan kredensial.
+  >**06 — kode:** klik [`pengguna.go`](../latihan-fiber-api/internal/model/pengguna.go) untuk model blacklist, lalu tampilkan fungsi `Logout` pada [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go).<br>
+  >**07 — logout:** di [Postman Web](https://web.postman.co/), kirim `POST http://localhost:3000/api/auth/logout` dengan otorisasi Bearer yang masih berlaku. Screenshot respons berhasil.<br>
+  >**08 — database:** buka database `pemweb2_fiber` di klien MySQL, pilih tabel `token_blacklists`, lalu screenshot baris JTI token yang dicabut.
+  >**09 — token dicabut:** di Postman kirim `GET http://localhost:3000/api/auth/profil` dengan token yang sama. Screenshot respons `401`. Samarkan token dan kredensial.
 
 ![Model dan mekanisme daftar hitam token](06-blacklist-kode.png)
 
@@ -52,10 +60,6 @@
   >| 8 | Fiber + JWT | Handler 198 + utilitas token 80 + middleware 39 + repository blacklist 29 + model 21 + route 8 + konfigurasi JWT 9 + migration 2 + pemeriksaan konfigurasi 4 | **390** |
   >
   >Pada cakupan tersebut, implementasi Fiber membutuhkan 202 LOC lebih banyak. Angka ini merupakan pengukuran berkas dan bagian kode autentikasi pada repositori ini, bukan ukuran universal; fitur kedua modul juga tidak sepenuhnya sama. Laravel lebih ringkas karena Sanctum, validasi, hashing, dan middleware disediakan framework. Fiber memberi kendali eksplisit atas klaim serta proses tanda tangan dan verifikasi JWT, tetapi membutuhkan lebih banyak kode untuk middleware dan pencabutan token. Sanctum memudahkan pencabutan dengan menghapus token tersimpan; JWT lebih fleksibel untuk membawa klaim dan digunakan lintas layanan, tetapi logout memerlukan blacklist dan pemeriksaan tambahan.
-  >
-  >Untuk screenshot bukti analisis, tampilkan tabel dan uraian ini di `README.md` Tugas-8 lalu simpan sebagai `10-perbandingan-modul5-modul8.png`.
-
-![Analisis perbandingan autentikasi Modul 5 dan Modul 8](10-perbandingan-modul5-modul8.png)
 
 # F. Pertanyaan Pembahasan
 
