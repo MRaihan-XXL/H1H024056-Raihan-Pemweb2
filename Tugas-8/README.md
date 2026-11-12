@@ -1,90 +1,85 @@
 # E. Tugas Praktikum
 
->Catatan screenshot: fitur autentikasi Fiber ini berupa REST API, bukan halaman website, jadi tidak ada tampilan web login/refresh yang bisa dibuka langsung. Untuk bukti hasil request, buka [Postman Web](https://web.postman.co/) dan kirim request ke API lokal. Untuk bukti kode, klik tautan file yang dicantumkan lalu ambil screenshot di editor. Screenshot basis data diambil dari klien MySQL. Cukup siapkan gambar `01` sampai `09` di bawah; bagian analisis nomor 4 tidak memerlukan screenshot tersendiri.
-
 ### 1. Tambahkan endpoint `POST /api/auth/segarkan` yang menerbitkan token baru berdasarkan token yang masih berlaku.
 
-  >Endpoint refresh hanya menerima JWT yang masih berlaku. Respons berisi token baru; token lama langsung dimasukkan ke daftar hitam agar tidak dapat digunakan kembali.
+  >Endpoint `POST /api/auth/segarkan` hanya menerima Bearer token yang valid dan belum dicabut. Middleware memeriksa signature, waktu kedaluwarsa, dan daftar hitam. Jika berhasil, server menerbitkan token baru sekaligus mencabut token lama agar token refresh tidak dapat digunakan berulang kali.
   >
-  >File yang digunakan: [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go) (`Segarkan`), [`router.go`](../latihan-fiber-api/internal/router/router.go), [`token.go`](../latihan-fiber-api/internal/auth/token.go), dan [`autentikasi.go`](../latihan-fiber-api/internal/middleware/autentikasi.go).
-  >
-  >**01 — kode:** klik [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), buka fungsi `Segarkan`, lalu ambil screenshot kode.<br>
-  >**02 — berhasil:** di [Postman Web](https://web.postman.co/), pilih metode `POST` dan alamat `http://localhost:3000/api/auth/segarkan`. Pada tab Authorization atur tipe Bearer dan masukkan token hasil login, lalu klik **Send**. Screenshot respons berhasil.<br>
-  >**03 — token lama:** kirim ulang request yang sama dengan token sebelum refresh. Screenshot respons `401`. Samarkan token pada seluruh gambar.
+  >Handler: [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), fungsi `Segarkan`<br>
+  >Route dan middleware: [`router.go`](../latihan-fiber-api/internal/router/router.go)
 
-![Cuplikan handler dan route refresh token](01-segarkan-kode.png)
+![Cuplikan handler untuk menyegarkan token](01-segarkan-kode.png)
 
-![Respons refresh token berhasil](02-segarkan-berhasil.png)
+  >Screenshot route dan hasil request refresh sudah dilampirkan di bawah.
 
-![Token lama ditolak setelah refresh](03-token-lama-setelah-refresh.png)
+![Route endpoint segarkan yang dilindungi middleware](02-route-segarkan.png)
+
+![Request refresh token dan respons aktual API](03-segarkan-api.png)
 
 ### 2. Tambahkan aturan validasi kustom untuk memastikan NIM diawali huruf H diikuti angka.
 
-  >Aturan validator kustom `nim` menerima format `H` diikuti satu atau lebih angka, misalnya `H12345678`. Aturan diterapkan saat membuat maupun memperbarui data mahasiswa. NIM yang tidak sesuai menghasilkan status `400`.
+  >Aturan `nim` menggunakan pola `^H[0-9]+$`, sehingga NIM harus diawali huruf kapital `H` dan dilanjutkan satu atau lebih angka. Validasi diterapkan saat membuat maupun memperbarui data mahasiswa.
   >
-  >File yang digunakan: [`validasi.go`](../latihan-fiber-api/internal/validasi/validasi.go) dan [`mahasiswa_handler.go`](../latihan-fiber-api/internal/handler/mahasiswa_handler.go).
-  >
-  >**04 — kode:** klik [`validasi.go`](../latihan-fiber-api/internal/validasi/validasi.go), lalu tampilkan aturan `nim`.<br>
-  >**05 — hasil:** di [Postman Web](https://web.postman.co/), pilih `POST` dan alamat `http://localhost:3000/api/mahasiswa`. Pada tab Headers isi `X-Api-Key` dengan API key lokal; pada tab Body pilih raw JSON. Kirim data sekali dengan NIM valid (misalnya `H12345678`) dan sekali dengan NIM tidak valid. Screenshot kedua hasil/status respons; jangan tampilkan API key.
+  >Aturan kustom: [`validasi.go`](../latihan-fiber-api/internal/validasi/validasi.go)<br>
+  >Penerapan pada permintaan mahasiswa: [`mahasiswa_handler.go`](../latihan-fiber-api/internal/handler/mahasiswa_handler.go)
 
-![Aturan validasi kustom NIM](04-validasi-nim-kode.png)
+![Cuplikan aturan validasi NIM](04-validasi-nim-kode.png)
 
-![Hasil pengujian NIM valid dan tidak valid](05-validasi-nim-api.png)
+  >Screenshot penerapan validasi dan hasil request NIM valid maupun tidak valid sudah dilampirkan di bawah.
+
+![Penerapan validasi NIM saat membuat dan memperbarui mahasiswa](05-validasi-nim-penerapan.png)
+
+![Hasil API untuk NIM valid dan tidak valid](06-validasi-nim-api.png)
 
 ### 3. Buat tabel daftar hitam token sederhana agar endpoint logout dapat mencabut token sebelum kedaluwarsa.
 
-  >Tabel `token_blacklists` menyimpan ID unik token (JTI) dan waktu kedaluwarsanya. `POST /api/auth/logout` memasukkan token aktif ke tabel tersebut; middleware memeriksa daftar hitam pada setiap endpoint autentikasi. Token yang dicabut ditolak dengan status `401`. Baris yang sudah kedaluwarsa dibersihkan saat token dicabut.
+  >Tabel `token_blacklists` menyimpan JTI dan waktu kedaluwarsa token yang dicabut. Middleware memeriksa daftar ini pada setiap request terlindungi, sedangkan endpoint `POST /api/auth/logout` memasukkan token aktif ke daftar hitam. Data daftar hitam yang sudah kedaluwarsa dibersihkan saat token dicabut.
   >
-  >File yang digunakan: [`pengguna.go`](../latihan-fiber-api/internal/model/pengguna.go), [`migrasi.go`](../latihan-fiber-api/internal/config/migrasi.go), [`token_blacklist_repository.go`](../latihan-fiber-api/internal/repository/token_blacklist_repository.go), [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), dan [`autentikasi.go`](../latihan-fiber-api/internal/middleware/autentikasi.go).
+  >Model: [`pengguna.go`](../latihan-fiber-api/internal/model/pengguna.go), tipe `TokenDiblokir`<br>
+  >Repository: [`token_blacklist_repository.go`](../latihan-fiber-api/internal/repository/token_blacklist_repository.go)<br>
+  >Handler dan route: [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go), [`router.go`](../latihan-fiber-api/internal/router/router.go)<br>
+  >Pemeriksaan token: [`autentikasi.go`](../latihan-fiber-api/internal/middleware/autentikasi.go)
+
+  >Screenshot model, repository, dan hasil logout dengan token yang dicabut sudah dilampirkan di bawah.
+
+![Model token blacklist](07-daftar-hitam-model.png)
+
+![Repository untuk memeriksa dan mencabut token](08-daftar-hitam-repository.png)
+
+![Logout berhasil dan token lama ditolak oleh API](09-logout-token-dicabut.png)
+
+### 4. Buat analisis perbandingan implementasi autentikasi Modul 5 dan Modul 8.
+
+  >Jumlah LOC menghitung baris kode yang tidak kosong dan bukan komentar. Cakupan Modul 5 meliputi controller autentikasi, middleware peran, model pengguna, migration terkait autentikasi, serta baris route dan konfigurasi middleware yang terkait. Cakupan Modul 8 meliputi handler autentikasi, utilitas JWT, middleware autentikasi, model dan repository blacklist, validasi, serta baris route, konfigurasi, migration, pemeriksaan secret, dan penerapan validasi NIM yang terkait. Tes dan kode framework yang tidak berhubungan dengan autentikasi tidak dihitung.
   >
-  >**06 — kode:** klik [`pengguna.go`](../latihan-fiber-api/internal/model/pengguna.go) untuk model blacklist, lalu tampilkan fungsi `Logout` pada [`auth_handler.go`](../latihan-fiber-api/internal/handler/auth_handler.go).<br>
-  >**07 — logout:** di [Postman Web](https://web.postman.co/), kirim `POST http://localhost:3000/api/auth/logout` dengan otorisasi Bearer yang masih berlaku. Screenshot respons berhasil.<br>
-  >**08 — database:** buka database `pemweb2_fiber` di klien MySQL, pilih tabel `token_blacklists`, lalu screenshot baris JTI token yang dicabut.
-  >**09 — token dicabut:** di Postman kirim `GET http://localhost:3000/api/auth/profil` dengan token yang sama. Screenshot respons `401`. Samarkan token dan kredensial.
+  >| Modul | Implementasi | LOC |
+  >|---|---|---:|
+  >| Modul 5 | Laravel Sanctum | **189** |
+  >| Modul 8 | Fiber, JWT, middleware, dan blacklist | **465** |
 
-![Model dan mekanisme daftar hitam token](06-blacklist-kode.png)
-
-![Logout berhasil](07-logout-berhasil.png)
-
-![JTI token tersimpan di tabel daftar hitam](08-token-blacklist-di-database.png)
-
-![Token ditolak setelah logout](09-token-ditolak-setelah-logout.png)
-
-### 4. Bandingkan implementasi autentikasi Modul 5 dan Modul 8 dari jumlah kode, kemudahan, dan fleksibilitas.
-
-  >Penghitungan LOC berikut menggunakan baris kode produksi yang tidak kosong dan bukan komentar. Cakupan Laravel mencakup controller autentikasi, model pengguna, middleware peran admin, migration kolom peran/waktu login, route autentikasi, dan pendaftaran middleware. Cakupan Fiber mencakup handler autentikasi, utilitas JWT, middleware autentikasi, repository blacklist, model pengguna/blacklist, route autentikasi, konfigurasi JWT, migration, dan pemeriksaan konfigurasi saat aplikasi dimulai. Tes, dependensi, validasi NIM, dan kode route yang tidak terkait autentikasi tidak dihitung.
-  >
-  >| Modul | Implementasi | Rincian LOC | Total |
-  >|---|---|---|---:|
-  >| 5 | Laravel + Sanctum | Controller 119 + model 21 + middleware 18 + migration 20 + route 8 + pendaftaran middleware 2 | **188** |
-  >| 8 | Fiber + JWT | Handler 198 + utilitas token 80 + middleware 39 + repository blacklist 29 + model 21 + route 8 + konfigurasi JWT 9 + migration 2 + pemeriksaan konfigurasi 4 | **390** |
-  >
-  >Pada cakupan tersebut, implementasi Fiber membutuhkan 202 LOC lebih banyak. Angka ini merupakan pengukuran berkas dan bagian kode autentikasi pada repositori ini, bukan ukuran universal; fitur kedua modul juga tidak sepenuhnya sama. Laravel lebih ringkas karena Sanctum, validasi, hashing, dan middleware disediakan framework. Fiber memberi kendali eksplisit atas klaim serta proses tanda tangan dan verifikasi JWT, tetapi membutuhkan lebih banyak kode untuk middleware dan pencabutan token. Sanctum memudahkan pencabutan dengan menghapus token tersimpan; JWT lebih fleksibel untuk membawa klaim dan digunakan lintas layanan, tetapi logout memerlukan blacklist dan pemeriksaan tambahan.
+  >Pada cakupan tersebut, implementasi Modul 8 menggunakan 276 LOC lebih banyak (sekitar 2,46 kali). Modul 5 lebih ringkas dan mudah dibuat karena Laravel menyediakan validasi, hashing, model, serta Sanctum untuk penerbitan dan pencabutan token. Pada Modul 8, Fiber memberi kontrol langsung atas klaim JWT, secret, masa berlaku, middleware, respons galat, dan mekanisme pencabutan, tetapi lebih banyak bagian harus dirangkai dan diuji sendiri. Karena itu, Sanctum lebih mudah untuk aplikasi Laravel yang mengikuti pola framework, sedangkan implementasi Fiber lebih fleksibel untuk menyesuaikan format token dan aturan autentikasi. Angka LOC merupakan pengukuran berkas pada repositori ini, bukan ukuran umum kedua framework.
 
 # F. Pertanyaan Pembahasan
 
 ### 1. Mengapa bcrypt lebih sesuai untuk kata sandi dibandingkan fungsi hash cepat seperti SHA-256?
 
-  >bcrypt dirancang untuk hashing kata sandi dan sengaja dibuat lambat. Faktor biayanya dapat dinaikkan sehingga tebakan kata sandi secara massal menjadi semakin mahal. bcrypt juga menggunakan salt sehingga kata sandi yang sama tidak menghasilkan hash yang sama. SHA-256 sangat cepat dan dirancang sebagai fungsi hash umum; kecepatan itu memudahkan penyerang mencoba banyak tebakan per detik jika hash kata sandi bocor.
+  >bcrypt dirancang khusus untuk penyimpanan kata sandi: prosesnya sengaja lebih lambat dan memiliki salt, sehingga percobaan tebakan kata sandi secara massal menjadi lebih mahal. SHA-256 adalah hash umum yang sangat cepat; jika basis data hash bocor, penyerang dapat mencoba banyak tebakan per detik. bcrypt juga memiliki cost yang dapat dinaikkan mengikuti kemampuan perangkat keras.
 
 ### 2. Apa konsekuensi apabila nilai `JWT_SECRET` bocor?
 
-  >Pihak yang memperoleh `JWT_SECRET` dapat membuat token bertanda tangan yang terlihat sah, termasuk mengaku sebagai pengguna lain atau memalsukan klaim peran. Secret harus kuat, acak, dan disimpan di environment, bukan di repositori. Jika bocor, secret harus segera dirotasi; rotasi akan membuat token lama yang ditandatangani dengan secret sebelumnya tidak lagi dapat diverifikasi.
+  >Pihak yang memperoleh secret dapat membuat JWT dengan signature yang valid dan menyamar sebagai pengguna lain, termasuk memalsukan klaim seperti identitas atau peran. Token yang sudah diterbitkan juga tidak lagi dapat dipercaya sepenuhnya. Secret harus segera diganti dan token terdampak dicabut atau dibuat tidak berlaku; secret baru perlu disimpan aman dan tidak dimasukkan ke repositori.
 
 ### 3. Mengapa penerapan logout pada JWT memerlukan usaha tambahan dibandingkan token tersimpan?
 
-  >JWT umumnya diverifikasi dari tanda tangan dan masa berlaku tanpa mencari token ke basis data. Karena itu, server tidak memiliki catatan untuk langsung menghapus sebuah token saat logout; token yang sudah diterbitkan tetap berlaku sampai `exp`. Implementasi ini menambahkan tabel blacklist berisi JTI dan masa kedaluwarsa, lalu middleware memeriksanya sebelum menerima token. Token tersimpan seperti Sanctum lebih mudah dicabut karena baris tokennya dapat langsung dihapus.
+  >JWT umumnya diverifikasi secara mandiri tanpa mencari catatan token di server. Karena itu, menghapus token dari sisi klien tidak membatalkan salinan token yang mungkin sudah dicuri dan token tetap berlaku sampai kedaluwarsa. Agar logout langsung berlaku, server perlu menyimpan identitas token yang dicabut, memeriksanya pada setiap request, dan membersihkan catatan yang sudah kedaluwarsa.
 
 ### 4. Jelaskan alasan pesan login gagal sebaiknya tidak menyebutkan apakah email atau kata sandi yang salah.
 
-  >Pesan umum seperti “Email atau kata sandi tidak sesuai” mencegah enumerasi akun. Jika respons menyatakan email tidak terdaftar, penyerang dapat mengumpulkan alamat yang memiliki akun dan menargetkannya dengan brute force atau phishing. Respons yang seragam untuk kedua kondisi mengurangi informasi yang dibocorkan kepada pihak yang mencoba login.
+  >Pesan umum seperti “Email atau kata sandi tidak sesuai” mencegah penyerang mengetahui apakah sebuah email terdaftar. Jika aplikasi membedakan kedua kondisi, penyerang dapat mengumpulkan alamat email valid terlebih dahulu lalu menargetkan akun tersebut. Pesan yang seragam mengurangi risiko enumerasi akun.
 
-## Menjalankan Project dan Mengambil Screenshot
+## Konfigurasi dan Screenshot
 
-Atur `JWT_SECRET` dan `JWT_TTL_MENIT` pada berkas `.env` di folder `latihan-fiber-api`. Gunakan secret acak minimal 32 byte dan jangan tampilkan nilainya pada screenshot. Pastikan MySQL berjalan dan database yang dikonfigurasi dapat diakses, lalu jalankan API dari folder tersebut:
+Jalankan API dari folder `latihan-fiber-api`. Sebelum menjalankan, siapkan basis data MySQL dan isi `.env` dengan konfigurasi basis data serta `JWT_SECRET` acak minimal 32 byte. `JWT_TTL_MENIT` mengatur masa berlaku token. Jangan tampilkan secret, kata sandi, atau token penuh pada screenshot.
 
-```powershell
-go run ./cmd/api
-```
+Untuk E.4 tidak diperlukan screenshot kode; tabel dan analisis perbandingan sudah dicantumkan di atas.
 
-Registrasikan pengguna melalui `POST /api/auth/registrasi`, lalu login melalui `POST /api/auth/login` untuk memperoleh token pengujian. Pada request mahasiswa, sertakan `X-Api-Key` dari konfigurasi lokal. Simpan screenshot di folder `Tugas-8` dengan nama yang dicantumkan pada setiap tugas; samarkan token, secret, API key, dan kata sandi sebelum menyimpan atau membagikannya.
+Screenshot kode menampilkan isi berkas proyek yang sebenarnya. Screenshot hasil API diambil dari request HTTP aktual ke server lokal; token dan kunci API disamarkan.
